@@ -1,0 +1,76 @@
+## My Incarceration Trends Report
+
+# Intro
+  This dataset summarizes incarceration trends in the U.S. from 1970 to 2018 relating to a variety of demographics. This dataset includes the number of total people, 15 to 64 year-old people, females and males in jail categorized by race. It also includes data on the total population as well as populations based on where inmates were transferred from. I chose to analyze the data related to incarcerated AAPI 15-64 year-olds. I wanted to analyze data that involved the relationship between race and incarceration rates in some way, and I haven't learned too much about AAPI jail rates so I figured it would be a good topic to learn more about. 
+  
+  I calculated five values based on the variables I chose to analyze. My first value is the mean of the total number of AAPI 15-64 year-olds that were incarcerated across all years in the dataset. The mean was about 3060 people each year. I found this interesting because before this assignment I didn't have a good frame of reference for the number of incarcerated AAPI people  in the United States. 
+  Another value I found was the difference between the maximum incarceration amount in a single county in Washington in the most recent year and oldest year. I attempted to find the maximum in the minimum and maximum years, but there was no data available for either year so I manually checked each year to find the closest years to the minimum and maximum years that had available data. My final value for this statistic is 223,168 fewer people were incarcerated in 1990 than 2016. I found this interesting because I expected there to be mroe incarcerated people in more recent years, but that was not the case. 
+  My next value is the name of the county and state in which the highest amount of AAPI people were incarcerated in a single year. The county was Los Angeles County in California. I thought this would be interesting to know because I assume there are the most AAPI people on the west coast, but I was wondering if there would be more incarcerations somewhere else solely based on more supposed political alignment.
+  My fourth value is the year in which the minimum number of 15-64 year-old AAPI people were in jail in a county in New York was recorded. This statistic contains every year from 1990 to 1999 because each year in the 90s was tied with 2 incarcerations total. I thought this value would be interesting because I would assume there are more AAPI people in more recent years, but the justice system may have been more unfair and racially biased in the past. I think it's very interesting that the lowest number stayed the same across 9 consecutive years.
+  My final value is the median number of AAPI people incarcerated in California and Texas, and the median of the two combined. I chose these two states because they both have high populations and are somewhat close to the west coast. The median in California was 5318.5 people while the Texas median was only 39 people. The total combined median was 70.5 people. I thought it was interesting that California was so much higher than Texas but the median was so much closer to Texas's median than California's.
+  
+```{r, warning = FALSE}
+source("../source/analysis.R")
+```
+
+```{r}
+mean(aapi_df$aapi_pop_15to64, na.rm = TRUE)
+```
+Above is the mean number of incarcerated 15-64 year old Asian-American/Pacific Islanders across all years from 1970 to 2018.
+
+```{r}
+max_in_maxWA - max_in_minWA
+```
+Above is the difference between the maximum number of AAPI people in jail in Washington state in the most recent and oldest year.
+
+```{r}
+merged_df %>%
+  filter(aapi_pop_15to64 == max(aapi_pop_15to64, na.rm = TRUE)) %>% 
+  pull(location)
+```
+Above is the county and state where the highest number of 15-64 year-old AAPI people were incarcerated.
+
+```{r}
+aapi_df %>%
+  filter(state == "NY") %>%
+  filter(aapi_pop_15to64 == min(aapi_pop_15to64, na.rm = TRUE)) %>% 
+  pull(year)
+```
+Above is the year in which the minimum number of 15-64 year-old AAPI people in jail in a single county in New York was recorded.
+
+```{r}
+median(aapi_TX$aapi_pop_15to64, na.rm = TRUE)
+median(aapi_CA$aapi_pop_15to64, na.rm = TRUE)
+median(TX_and_CA_df$aapi_pop_15to64, na.rm = TRUE)
+```
+Above is the median number of AAPI people who were incarcerated in both Texas, the median in California, and the median of both states combined.
+
+```{r, echo = FALSE}
+aapi_plot
+```
+
+Above is a graph of the number of AAPI incarcerations from 1970 to 2020 within the first 9 states, alphabetically. I included this plot because I was curious to see which states had the most AAPI incarcerations. I couldn't include all states because the graph would've been too crowded to be readable, but I thought it was still interesting to see the patterns within a smaller subset of states. 
+ The patterns that I found were that Connecticut appears to have incarcerations beginning in 1970, whereas other states' first recorded incarcerations were around 1990. After 1990 most states were relatively similar across the entire graph, averaging around 100,000 incarcerations. However, there is one outlier: California. California had many more incarcerations than any other state, with the number growing steadily from 1990 to 2018. In 2018, California appears to have over 3 million more incarcerations than any other state in the graph.
+
+``` {r, echo = FALSE}
+race_comp_graph <- areaplot(.~year, data = race_df,
+         main = "White vs. Black Incarceration Rates",
+         xlab = "Year (1970-2018)", 
+         ylab = "Incarcerations",
+         label = scales::comma,
+         col = cols,
+         border = "white",
+         lwd = 1,
+         lty = 1,
+         legend = TRUE,
+         args.legend = list(x = "topleft", cex = 0.7,
+                            bg = "white", bty = "o"))
+```
+
+Above is a graph that compares the incarceration rates of white and black people across the United States from 1970 to 2018. I included this chart because I thought it would be interesting to see the trends of incarceration for black and white people as a whole. The news, especially recently, has made it sound like black people are incarcerated at a disproportinate rate when compared to white people, so I thought it would be interesting to see if this idea was backed up by the dataset. I chose this kind of graph because I thought it appropriately displayed each variable's relationship the other as well as over time. This graph shows that neither variable had data before about 1985, and they stayed relatively even throughout the entire graph. Both variables increase and decrease at the same time and in similar amounts.
+
+```{r, echo = FALSE}
+us_map
+```
+
+Above is a map of the United States in which each state is color-coded based on how many AAPI people were incarcerated in that state between 1970 and 1999. I chose to map the Latinx incarcerated population across the U.S. because, as seen in the first graph I created, California has a much higher incarceration rate of AAPI people in comparison with other states, and I thought it would be interesting to see if that trend applied to other races as well. The trends that I see in this map are that California has the highest incarceration numbers by far, with Texas clearly in second place. This is likely due to their size, and may possibly also connect to their location in the southern half of the United States, where there may be a larger population of Latinx people in general.
